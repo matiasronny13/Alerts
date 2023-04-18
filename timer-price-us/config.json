@@ -1,0 +1,20 @@
+{
+    "bot": {
+        "telegram_token": "5753475130:AAG4uKFc8IEqZYfB_jV-i5s1C_PVcDcRmgg"
+    },
+    "google_spreadsheet": {
+        "credential": {
+            "type": "service_account",
+            "project_id": "fast-nexus-384018",
+            "private_key_id": "7a9dc735ea1046dbdd9406f7fe3ac3e77bf092eb",
+            "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDJDR2VQ+ccj/Xw\nW+6eUZoUAjvbtRq+BU9E6xhfm5rfADMKy2KbpJqePMnFSXwU0Nzu4musDCRv7u4f\n5kh1RIB80v26LemssPlglOHV1EKlmE75D/jvLuv+CLoKUWLS+/iWojOax0fwZYoG\nfKItoJB8aB0MU3iFSMLloOmAJT8jUng38X+LZBLfVGDTRAClLI3K0bX4L02RBj94\nz65QNgeHn3fvin2xkhI1PCGbXUor/qff5I8Ir/zLsYvpSYvAR89RWQCerp3kXPI3\nK78vvIS+rHOIcXTWnRTngkfluUWJoZeGcY6WUaxiRpeyx2fQXCDwc9OdshrUF8+v\nd1fdFjAJAgMBAAECggEAEBtBILVfJTJiQ0Z2JBBI/evc5EHKuejefBiya+xhGJbh\nP+7hwDLMYTtg9bFoo5lE7c1NT2vsmlwDjyIpcV2Sxo03nuvxMbC+1a4vtmvqB+6e\n+wR8zpqNdN05nDx/ZIQjmtu1MyPeX0OfLlxbOLkJgjHsC9H/EHxvAqrkseup9ngP\nRIp1UQ6iAo4ci8njczFarZY1k/YV4vDyOU/2iMPkpsliY16AX3oYVNOtwXUYVVk4\n3t5CMSRT5uadtLuA/eL2oqapoR7Kd0wr5zKlCR5DyGeFGuS2VBcqA62Fq7IDjf4+\nfMWkijnRadQi3ZrE/1B99aayWhIHeQPzpgCrBoh45QKBgQDpfssq0gYwlEUMFH08\nKBWrofqn3BC8S+kR6zA6yh4qFAlxwYOOB5lcV1DFVd6uq/FM8R74i6wKdedoQLxM\npCj63ZUmYWUoOJIPiglGxmX1kU6rw3qHAwqIbJe24IpsCH6hkrgBg4IOt5KQu3Lo\n3J8bntW90UTntLJ3vCRtP2ikbQKBgQDcbc4en+RuyOcGvBkMxU/XRt6IHDV97F4U\nwjBSzqOKenJ7aOv/NQXyIBXsbCsOTrFMclr/GD2XKv1w/H5KcImi/gIhEsKinGPV\noJbDRN0OI5AmBqDVSR63Go2pmL6wvbfM4i1dPyouFeYU5k5uvEZc+CkS/njNaHEA\nVOzWP74gjQKBgQCVaq/0POX9HER7EHl7j2Meq87MsAR9mk4RS2FXnZNj9eJ9Swo2\nTyKSdsWXIfYX7KvDQuFAx5BWOVDV4+cbXEllD3qsTtL+xASjsP9yrO7+D/g57iNw\nVj/dQTBstI+fxmfSWSMqxM7rQAmoWGuWG+gtMp0wlMP1SiqSeHEO/+6kmQKBgQCq\nXvx3UyIeNo3J+MxrwH3LaG1LSnJV18GHzefHuQtSVv3xQNFXOcZUtFP9nkVRE6WZ\n7rFChZvlIUcucxmxs3XOUwGWSofBY5sOXMbqOmmZKgeaPHlHIPLql01zDiolNR3A\n7/gcIFwbrrVc5f0tPbws02n70k/Qg68DkKBVoIL1aQKBgQDVyKs5BtExEp5LsGKi\nGVU4DFxKPYFURxVdypI8WagNWhg49Av8hEYpmT53ch3x6YO8z22Ov5s1zTljh6tE\n0Oao3M2/hPCv4ctFlCQOjljNNl82FW/n+T9hBJzmcUq4DZsgagJQGPnMetfci3js\nKIA4PLZDi1PVO+bwUHMFkNvIUQ==\n-----END PRIVATE KEY-----\n",
+            "client_email": "azurefunction@fast-nexus-384018.iam.gserviceaccount.com",
+            "client_id": "109038160565114864954",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/azurefunction%40fast-nexus-384018.iam.gserviceaccount.com"
+        },
+        "file_name": "onetime-price-us"
+    }
+}
