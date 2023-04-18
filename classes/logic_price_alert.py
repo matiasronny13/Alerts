@@ -25,9 +25,7 @@ class PriceAlertLogic:
         try:
             quotes = pdr.get_quote_yahoo(self.df.symbol.to_list())
 
-            if quotes.empty:
-                await self.send(f'\U00002757 ERROR: {self.config["google_spreadsheet"]["file_name"]} spreadsheet is empty')
-            else:
+            if not quotes.empty:
                 new_sheet = [["symbol", "operator", "value"]]
                 for index, item in self.df.iterrows():
                     is_triggered = await self.validate(quotes.loc[item.symbol], item)
