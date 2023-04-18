@@ -72,7 +72,9 @@ class PriceAlertLogic:
     def get_google_alert_dataframe(self) -> pd.DataFrame:
         rows = self.gsheet.get()
         if len(rows) > 0:
-            return pd.DataFrame(rows[1:], columns=rows[0])
+            result = pd.DataFrame(rows[1:], columns=rows[0])
+            result.symbol = result.symbol.str.upper()
+            return result
         else: 
             return None        
 
