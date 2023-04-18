@@ -45,12 +45,12 @@ class PriceAlertLogic:
                 target_price = Decimal(item.value)
                 match item.operator:
                     case "gt":
-                        if quote_price > target_price:
-                            await self.send(f"\U00002714 {item.symbol} is greater than {target_price}")
+                        if quote_price >= target_price:
+                            await self.send(f"\U00002714 {item.symbol} is greater or equal than {target_price}")
                             return True
                     case "lt":
-                        if quote_price < target_price:
-                            await self.send(f"\U00002714 {item.symbol} is less than {target_price}")
+                        if quote_price <= target_price:
+                            await self.send(f"\U00002714 {item.symbol} is less or equal than {target_price}")
                             return True
                     case _:
                         await self.send(f"\U00002757 ERROR: quote {item.symbol} has invalid operator {item.operator}")            
