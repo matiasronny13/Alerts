@@ -23,7 +23,7 @@ class PriceAlertLogic:
  
     async def scan(self):
         try:
-            quotes = pdr.get_quote_yahoo(self.df.symbol.to_list())
+            quotes = pdr.get_quote_yahoo(self.df.symbol.str.upper().to_list())
 
             if not quotes.empty:
                 new_sheet = [["symbol", "operator", "value"]]
