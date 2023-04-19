@@ -9,7 +9,7 @@ import azure.functions as func
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    with open(f"{pathlib.Path(__file__).parent}/config.json", 'r') as f:    #TODO: replace with function app local json setting
+    with open(f"{pathlib.Path(__file__).parent.parent}/configs/config.json", 'r') as f:    #TODO: replace with function app local json setting
             input_config = json.load(f)
 
     processor = PriceAlertLogic(input_config)

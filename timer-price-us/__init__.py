@@ -17,7 +17,7 @@ def main(mytimer: func.TimerRequest) -> None:
 
     logging.info('Python timer trigger function ran at %s', utc_timestamp)
     
-    with open(f"{pathlib.Path(__file__).parent}/config.json", 'r') as f:    #TODO: replace with function app local json setting
+    with open(f"{pathlib.Path(__file__).parent.parent}/configs/config.json", 'r') as f:    #TODO: replace with function app local json setting
             input_config = json.load(f)
 
     processor = PriceAlertLogic(input_config)
