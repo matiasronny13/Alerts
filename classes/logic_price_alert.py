@@ -5,6 +5,7 @@ import httpx
 import pandas as pd
 import pandas_datareader as pdr
 from decimal import Decimal
+import time
 
 
 class PriceAlertLogic:
@@ -21,9 +22,22 @@ class PriceAlertLogic:
         else:
             await self.send(f'\U00002757 ERROR: {self.config["google_spreadsheet"]["file_name"]} spreadsheet does not have header columns')
  
+    def get_quote_with_failover(self, symbols):
+        retry = 0
+        while retry < 3:
+            try:    
+                if retry > 0: 
+                    time.sleep(1)
+
+                result = pdr.get_quote_yahoo(symbols)
+                return result
+            except:
+                retry += 1
+        return pd.DataFrame()
+
     async def scan(self):
         try:
-            quotes = pdr.get_quote_yahoo(self.df.symbol.drop_duplicates().str.upper().to_list())
+            quotes = self.get_quote_with_failover(self.df.symbol.drop_duplicates().str.upper().to_list())
 
             if not quotes.empty:
                 new_sheet = [["symbol", "operator", "value"]]
