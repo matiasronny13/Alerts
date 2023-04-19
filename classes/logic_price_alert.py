@@ -22,7 +22,7 @@ class PriceAlertLogic:
         else:
             await self.send(f'\U00002757 ERROR: {self.config["google_spreadsheet"]["file_name"]} spreadsheet does not have header columns')
  
-    def get_quote_with_failover(self, symbols):
+    async def get_quote_with_failover(self, symbols):
         retry = 0
         while retry < 3:
             try:    
@@ -33,11 +33,13 @@ class PriceAlertLogic:
                 return result
             except:
                 retry += 1
+        
+        await self.send(f"\U00002757 ERROR: 3 attempts have failed reading quotes {self.df.symbol.to_list()}")
         return pd.DataFrame()
 
     async def scan(self):
         try:
-            quotes = self.get_quote_with_failover(self.df.symbol.drop_duplicates().str.upper().to_list())
+            quotes = await self.get_quote_with_failover(self.df.symbol.drop_duplicates().str.upper().to_list())
 
             if not quotes.empty:
                 new_sheet = [["symbol", "operator", "value"]]
