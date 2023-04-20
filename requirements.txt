@@ -5,4 +5,3 @@
 azure-functions
 gspread
 python-telegram-bot
-pandas_datareader
