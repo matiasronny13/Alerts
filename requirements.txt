@@ -5,3 +5,4 @@
 azure-functions
 gspread
 python-telegram-bot
+pandas
