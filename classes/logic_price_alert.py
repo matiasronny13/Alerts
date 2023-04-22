@@ -74,21 +74,11 @@ class PriceAlertLogic:
                 if retry > 0: 
                     time.sleep(1)
                 
-                async with httpx.AsyncClient() as client:
-                    tasks = [
-                        asyncio.ensure_future(self.create_query_task(client, symbols, "EQUITY")),
-                        asyncio.ensure_future(self.create_query_task(client, symbols, "FUTURE")),
-                        asyncio.ensure_future(self.create_query_task(client, symbols, "CURRENCY")),
-                        asyncio.ensure_future(self.create_query_task(client, symbols, "ETF"))
-                    ]
-                    
-                    gather_results = await asyncio.gather(*tasks)
-
-                    for items in gather_results:
-                        if items is not None and len(items) > 0:
-                            result = pd.DataFrame(items) if result.empty else result._append(items)
-
-                return result
+                response = httpx.get(f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={','.join(symbols)}&fields=regularMarketPrice")
+                if response.status_code == 200:
+                    json_response = response.json()
+                    result_list = [{"symbol": a["symbol"], "price": a["regularMarketPrice"]} for a in json_response["quoteResponse"]["result"]]
+                    return pd.DataFrame(result_list)
             except:
                 retry += 1                
                 if retry > 2:
