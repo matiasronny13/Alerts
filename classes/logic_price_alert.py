@@ -132,7 +132,7 @@ class PriceAlertLogic:
 
     def connect_telegram_bot(self):
         bot_token = self.config["bot"]["telegram_token"]
-        chat_id = httpx.get(f"https://api.telegram.org/bot{bot_token}/getUpdates").json()['result'][0]['message']['from']['id']
+        chat_id = self.config["bot"]["chat_id"] #httpx.get(f"https://api.telegram.org/bot{bot_token}/getUpdates").json()['result'][0]['message']['from']['id']
         return telegram.Bot(bot_token), chat_id
 
     def get_google_alert_dataframe(self) -> pd.DataFrame:
