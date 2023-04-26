@@ -2,12 +2,12 @@ import logging
 import telegram
 import gspread
 import httpx
-import asyncio
 import json
 import pandas as pd
 from decimal import Decimal
 import time
-
+import datetime
+import pytz
 
 class PriceAlertLogic:
     def __init__(self, config):
@@ -88,6 +88,7 @@ class PriceAlertLogic:
 
     async def scan(self):
         try:
+            execution_time = datetime.datetime.now().astimezone(pytz.timezone("Asia/Jakarta")).strftime("%d-%m-%Y %I:%M:%S %p")
             quotes = await self.get_quote_with_failover(self.df.symbol.drop_duplicates().str.upper().to_list())
 
             if not quotes.empty:
@@ -97,6 +98,8 @@ class PriceAlertLogic:
                     if not is_triggered:
                         new_sheet.append(item.to_list())
 
+                new_sheet.append([None, None, None])
+                new_sheet.append([f"Last Execution : {execution_time}", "", ""])
                 self.gsheet.clear()
                 self.gsheet.insert_rows(new_sheet)
         except Exception as ex:
@@ -137,6 +140,10 @@ class PriceAlertLogic:
 
     def get_google_alert_dataframe(self) -> pd.DataFrame:
         rows = self.gsheet.get()
+
+        rows = [r for r in rows if r != []] #drop empty row
+        rows = [r for r in rows if not r[0].lower().startswith("last execution")] #drop timestamp row
+
         if len(rows) > 0:
             result = pd.DataFrame(rows[1:], columns=rows[0])
             result.symbol = result.symbol.str.upper()
