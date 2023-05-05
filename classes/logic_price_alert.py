@@ -74,7 +74,8 @@ class PriceAlertLogic:
                 if retry > 0: 
                     time.sleep(1)
                 
-                response = httpx.get(f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={','.join(symbols)}&fields=regularMarketPrice")
+                response = httpx.get(f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={','.join(symbols)}&fields=regularMarketPrice&crumb={self.config['yahoo']['crumb']}", 
+                                     headers = self.config["yahoo"]["request-headers"])
                 if response.status_code == 200:
                     json_response = response.json()
                     result_list = [{"symbol": a["symbol"], "price": a["regularMarketPrice"]} for a in json_response["quoteResponse"]["result"]]
