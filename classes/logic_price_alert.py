@@ -93,12 +93,16 @@ class PriceAlertLogic:
             quotes = await self.get_quote_with_failover(self.df.symbol.drop_duplicates().str.upper().to_list())
 
             if not quotes.empty:
-                new_sheet = [["symbol", "operator", "value"]]
+                new_sheet = []
                 for index, item in self.df.iterrows():
                     is_triggered = await self.validate(quotes[quotes.symbol == item.symbol].iloc[0], item)
                     if not is_triggered:
                         new_sheet.append(item.to_list())
 
+                if len(new_sheet) > 0:
+                    new_sheet = sorted(new_sheet, key=lambda x: x[0])
+                    
+                new_sheet.insert(0, ["symbol", "operator", "value"])
                 new_sheet.append([None, None, None])
                 new_sheet.append([f"Last Execution : {execution_time}", "", ""])
                 self.gsheet.clear()
