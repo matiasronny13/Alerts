@@ -80,33 +80,38 @@ class PriceAlertLogic:
                     json_response = response.json()
                     result_list = [{"symbol": a["symbol"], "price": a["regularMarketPrice"]} for a in json_response["quoteResponse"]["result"]]
                     return pd.DataFrame(result_list)
+                else:
+                    logging.error(f"ERROR: HTTP code {response.status_code} - {response.content.decode()}")
             except:
-                retry += 1                
-                if retry > 2:
-                    await self.send(f"\U00002757 ERROR: 3 attempts have failed reading quotes {self.df.symbol.to_list()}")
+                await self.send(f"\U00002757 ERROR: attempt have failed reading quotes {self.df.symbol.to_list()}")
+                    
+            retry += 1
 
         return result
 
     async def scan(self):
         try:
             execution_time = datetime.datetime.now().astimezone(pytz.timezone("Asia/Jakarta")).strftime("%d-%m-%Y %I:%M:%S %p")
-            quotes = await self.get_quote_with_failover(self.df.symbol.drop_duplicates().str.upper().to_list())
+            unique_symbols = self.df.symbol.drop_duplicates()
 
-            if not quotes.empty:
-                new_sheet = []
-                for index, item in self.df.iterrows():
-                    is_triggered = await self.validate(quotes[quotes.symbol == item.symbol].iloc[0], item)
-                    if not is_triggered:
-                        new_sheet.append(item.to_list())
+            if not unique_symbols.empty:
+                quotes = await self.get_quote_with_failover(unique_symbols.str.upper().to_list())
 
-                if len(new_sheet) > 0:
-                    new_sheet = sorted(new_sheet, key=lambda x: x[0])
-                    
-                new_sheet.insert(0, ["symbol", "operator", "value"])
-                new_sheet.append([None, None, None])
-                new_sheet.append([f"Last Execution : {execution_time}", "", ""])
-                self.gsheet.clear()
-                self.gsheet.insert_rows(new_sheet)
+                if not quotes.empty:
+                    new_sheet = []
+                    for index, item in self.df.iterrows():
+                        is_triggered = await self.validate(quotes[quotes.symbol == item.symbol].iloc[0], item)
+                        if not is_triggered:
+                            new_sheet.append(item.to_list())
+
+                    if len(new_sheet) > 0:
+                        new_sheet = sorted(new_sheet, key=lambda x: x[0])
+                        
+                    new_sheet.insert(0, ["symbol", "operator", "value"])
+                    new_sheet.append([None, None, None])
+                    new_sheet.append([f"Last Execution : {execution_time}", "", ""])
+                    self.gsheet.clear()
+                    self.gsheet.insert_rows(new_sheet)
         except Exception as ex:
             await self.send(f"\U00002757 ERROR: reading quotes {self.df.symbol.to_list()}")
             logging.exception(ex)
