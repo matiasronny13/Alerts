@@ -110,8 +110,10 @@ class PriceAlertLogic:
                     new_sheet.insert(0, ["symbol", "operator", "value"])
                     new_sheet.append([None, None, None])
                     new_sheet.append([f"Last Execution : {execution_time}", "", ""])
-                    self.gsheet.clear()
                     self.gsheet.insert_rows(new_sheet)
+                    new_sheet_len = len(new_sheet)
+                    #gsheet.insert_rows is shifting rows below, so we need to remove previous rows due to limitation of max 10k rows
+                    self.gsheet.delete_rows(new_sheet_len + 1, new_sheet_len * 4)
         except Exception as ex:
             await self.send(f"\U00002757 ERROR: reading quotes {self.df.symbol.to_list()}")
             logging.exception(ex)
