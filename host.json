@@ -3,9 +3,12 @@
   "logging": {
     "applicationInsights": {
       "samplingSettings": {
-        "isEnabled": true,
+        "isEnabled": false,
         "excludedTypes": "Request"
       }
+    },
+    "logLevel": {
+      "default": "Error"
     }
   },
   "extensionBundle": {
