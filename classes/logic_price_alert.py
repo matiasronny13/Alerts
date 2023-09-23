@@ -1,6 +1,5 @@
 import logging
 import telegram
-import gspread
 import httpx
 import json
 import pandas as pd
@@ -8,16 +7,17 @@ from decimal import Decimal
 import time
 import datetime
 import pytz
+from supabase import create_client, Client
 
 class PriceAlertLogic:
     def __init__(self, config):
         self.config = config
         self.bot, self.chat_id = self.connect_telegram_bot()
-        self.gsheet = self.connect_google_spreadsheet().sheet1
+        self.supabase_client = create_client(self.config["supabase"]["url"], self.config["supabase"]["secret"])
 
     async def run(self):
         logging.info("PriceAlertLogic.run()")
-        self.df = self.get_google_alert_dataframe()
+        self.df = self.get_supabase_alert_dataframe()
         if self.df is not None:
             await self.scan()
         else:
@@ -98,22 +98,17 @@ class PriceAlertLogic:
                 quotes = await self.get_quote_with_failover(unique_symbols.str.upper().to_list())
 
                 if not quotes.empty:
-                    new_sheet = []
+                    delete_ids = []
+                    
                     for index, item in self.df.iterrows():
                         is_triggered = await self.validate(quotes[quotes.symbol == item.symbol].iloc[0], item)
-                        if not is_triggered:
-                            new_sheet.append(item.to_list())
-
-                    if len(new_sheet) > 0:
-                        new_sheet = sorted(new_sheet, key=lambda x: x[0])
-                        
-                    new_sheet.insert(0, ["symbol", "operator", "value"])
-                    new_sheet.append([None, None, None])
-                    new_sheet.append([f"Last Execution : {execution_time}", "", ""])
-                    self.gsheet.insert_rows(new_sheet)
-                    new_sheet_len = len(new_sheet)
-                    #gsheet.insert_rows is shifting rows below, so we need to remove previous rows due to limitation of max 10k rows
-                    self.gsheet.delete_rows(new_sheet_len + 1, new_sheet_len * 4)
+                        if is_triggered:
+                            delete_ids.append(str(item.id))
+                            
+                    if len(delete_ids) > 0:
+                        self.supabase_client.table("Alerts").delete().in_("id", delete_ids).execute()
+            
+            self.supabase_client.table("Alerts_History").upsert({"id": "last_execution", "value": execution_time}).execute()
         except Exception as ex:
             await self.send(f"\U00002757 ERROR: reading quotes {self.df.symbol.to_list()}")
             logging.exception(ex)
@@ -123,7 +118,7 @@ class PriceAlertLogic:
         try:
             if quote is not None:
                 quote_price = quote.price
-                target_price = Decimal(item.value)
+                target_price = Decimal(item.price)
                 match item.operator:
                     case "gt":
                         if quote_price >= target_price:
@@ -141,27 +136,21 @@ class PriceAlertLogic:
             logging.exception(ex)          
         return result
 
-    def connect_google_spreadsheet(self):
-        gc = gspread.service_account_from_dict(self.config["google_spreadsheet"]["credential"])
-        return gc.open(self.config["google_spreadsheet"]["file_name"])
-
     def connect_telegram_bot(self):
         bot_token = self.config["bot"]["telegram_token"]
         chat_id = self.config["bot"]["chat_id"] #httpx.get(f"https://api.telegram.org/bot{bot_token}/getUpdates").json()['result'][0]['message']['from']['id']
         return telegram.Bot(bot_token), chat_id
 
-    def get_google_alert_dataframe(self) -> pd.DataFrame:
-        rows = self.gsheet.get()
+    def get_supabase_alert_dataframe(self) -> pd.DataFrame:
+        rows = self.supabase_client.table("Alerts").select("id", "symbol", "operator", "price").execute().data
 
         rows = [r for r in rows if r != []] #drop empty row
-        rows = [r for r in rows if not r[0].lower().startswith("last execution")] #drop timestamp row
-
+        
         if len(rows) > 0:
-            result = pd.DataFrame(rows[1:], columns=rows[0])
-            result.symbol = result.symbol.str.upper()
+            result = pd.DataFrame.from_records(rows)
             return result
         else: 
-            return None        
+            return None   
 
     async def send(self, msg):
         await self.bot.sendMessage(chat_id=self.chat_id, text=msg)
